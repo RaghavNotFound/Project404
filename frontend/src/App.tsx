@@ -1,4 +1,5 @@
-import { useState, Suspense, lazy } from "react";
+import { Suspense, lazy } from "react";
+import { BrowserRouter as Router, Routes, Route, useNavigate, useParams } from "react-router-dom";
 import { LandingPage } from "./components/LandingPage";
 import { CollegeSelection } from "./components/CollegeSelection";
 import { Login, UserRole } from "./components/Login";
@@ -14,9 +15,7 @@ const FeaturesPage = lazy(() => import("./components/FeaturesPage").then(module 
 const SolutionsPage = lazy(() => import("./components/SolutionsPage").then(module => ({ default: module.SolutionsPage })));
 const SupportPage = lazy(() => import("./components/SupportPage").then(module => ({ default: module.SupportPage })));
 
-type ViewState = "landing" | "college-selection" | "login" | "dashboard" | "features" | "solutions" | "support";
-
-interface UserData {
+export interface UserData {
   email: string;
   role: UserRole;
   college: string;
@@ -34,137 +33,208 @@ const LoadingSpinner = () => (
   </div>
 );
 
-export default function App() {
-  const [currentView, setCurrentView] = useState<ViewState>("landing");
-  const [selectedCollege, setSelectedCollege] = useState<string>("");
-  const [userData, setUserData] = useState<UserData | null>(null);
-
-  const handleGetStarted = () => {
-    setCurrentView("college-selection");
-  };
-
-  const handleCollegeSelect = (college: string) => {
-    setSelectedCollege(college);
-    setCurrentView("login");
-  };
-
-  const handleLogin = (role: UserRole, user: UserData) => {
-    setUserData(user);
-    setCurrentView("dashboard");
-  };
-
-  const handleLogout = () => {
-    setUserData(null);
-    setCurrentView("landing");
-  };
-
-  const handleBack = () => {
-    setCurrentView("college-selection");
-  };
-
-  const handleBackToLanding = () => {
-    setCurrentView("landing");
-  };
-
-  const handleNavigateToFeatures = () => {
-    setCurrentView("features");
-  };
-
-  const handleNavigateToSolutions = () => {
-    setCurrentView("solutions");
-  };
-
-  const handleNavigateToSupport = () => {
-    setCurrentView("support");
-  };
-
+// Wrapper components for routing
+const LandingPageWrapper = () => {
+  const navigate = useNavigate();
+  
   const handleNavigate = (page: string) => {
     switch (page) {
       case "college-selection":
-        setCurrentView("college-selection");
+        navigate("/college-selection");
         break;
       case "features":
-        setCurrentView("features");
+        navigate("/features");
         break;
       case "solutions":
-        setCurrentView("solutions");
+        navigate("/solutions");
         break;
       case "support":
-        setCurrentView("support");
+        navigate("/support");
         break;
       default:
         console.log(`Navigation to ${page} not implemented`);
     }
   };
 
-  const renderCurrentView = () => {
-    switch (currentView) {
-      case "landing":
-        return <LandingPage onNavigate={handleNavigate} />;
-        
-      case "features":
-        return (
-          <Suspense fallback={<LoadingSpinner />}>
-            <FeaturesPage onBack={handleBackToLanding} />
-          </Suspense>
-        );
-        
-      case "solutions":
-        return (
-          <Suspense fallback={<LoadingSpinner />}>
-            <SolutionsPage onBack={handleBackToLanding} />
-          </Suspense>
-        );
-        
-      case "support":
-        return (
-          <Suspense fallback={<LoadingSpinner />}>
-            <SupportPage onBack={handleBackToLanding} />
-          </Suspense>
-        );
-        
-      case "college-selection":
-        return <CollegeSelection onCollegeSelect={handleCollegeSelect} />;
-        
-      case "login":
-        return (
-          <Login 
-            college={selectedCollege} 
-            onLogin={handleLogin} 
-            onBack={handleBack}
-          />
-        );
-      
-      case "dashboard":
-        if (!userData) return null;
-        
-        return (
-          <Suspense fallback={<LoadingSpinner />}>
-            {(() => {
-              switch (userData.role) {
-                case "student":
-                  return <StudentDashboard userData={userData} onLogout={handleLogout} />;
-                case "parent":
-                  return <ParentDashboard userData={userData} onLogout={handleLogout} />;
-                case "faculty":
-                  return <FacultyDashboard userData={userData} onLogout={handleLogout} />;
-                case "admin":
-                  return <AdminDashboard userData={userData} onLogout={handleLogout} />;
-                default:
-                  return <LandingPage onNavigate={handleNavigate} />;
-              }
-            })()}
-          </Suspense>
-        );
-      
-      default:
-        return <LandingPage onNavigate={handleNavigate} />;
-    }
+  return <LandingPage onNavigate={handleNavigate} />;
+};
+
+const CollegeSelectionWrapper = () => {
+  const navigate = useNavigate();
+  
+  const handleCollegeSelect = (college: string) => {
+    navigate(`/login/${encodeURIComponent(college)}`);
+  };
+
+  return <CollegeSelection onCollegeSelect={handleCollegeSelect} />;
+};
+
+const LoginWrapper = () => {
+  const navigate = useNavigate();
+  const { college } = useParams<{ college: string }>();
+  
+  const handleLogin = (role: UserRole, user: UserData) => {
+    // Store user data in sessionStorage for persistence
+    sessionStorage.setItem('userData', JSON.stringify(user));
+    navigate(`/dashboard/${role}/${user.id}`);
+  };
+
+  const handleBack = () => {
+    navigate("/college-selection");
   };
 
   return (
-    <div className="size-full">
-      {renderCurrentView()}
-    </div>
+    <Login 
+      college={college ? decodeURIComponent(college) : ""} 
+      onLogin={handleLogin} 
+      onBack={handleBack}
+    />
+  );
+};
+
+const FeaturesPageWrapper = () => {
+  const navigate = useNavigate();
+  
+  const handleBack = () => {
+    navigate("/");
+  };
+
+  return <FeaturesPage onBack={handleBack} />;
+};
+
+const SolutionsPageWrapper = () => {
+  const navigate = useNavigate();
+  
+  const handleBack = () => {
+    navigate("/");
+  };
+
+  return <SolutionsPage onBack={handleBack} />;
+};
+
+const SupportPageWrapper = () => {
+  const navigate = useNavigate();
+  
+  const handleBack = () => {
+    navigate("/");
+  };
+
+  return <SupportPage onBack={handleBack} />;
+};
+
+// Dashboard wrapper components
+const StudentDashboardWrapper = () => {
+  const navigate = useNavigate();
+  const { userId } = useParams<{ userId: string }>();
+  
+  // Get user data from sessionStorage or redirect to login
+  const userDataStr = sessionStorage.getItem('userData');
+  if (!userDataStr) {
+    navigate('/college-selection');
+    return null;
+  }
+  
+  const userData: UserData = JSON.parse(userDataStr);
+  
+  const handleLogout = () => {
+    sessionStorage.removeItem('userData');
+    navigate("/");
+  };
+
+  return <StudentDashboard userData={userData} onLogout={handleLogout} />;
+};
+
+const ParentDashboardWrapper = () => {
+  const navigate = useNavigate();
+  const { userId } = useParams<{ userId: string }>();
+  
+  const userDataStr = sessionStorage.getItem('userData');
+  if (!userDataStr) {
+    navigate('/college-selection');
+    return null;
+  }
+  
+  const userData: UserData = JSON.parse(userDataStr);
+  
+  const handleLogout = () => {
+    sessionStorage.removeItem('userData');
+    navigate("/");
+  };
+
+  return <ParentDashboard userData={userData} onLogout={handleLogout} />;
+};
+
+const FacultyDashboardWrapper = () => {
+  const navigate = useNavigate();
+  const { userId } = useParams<{ userId: string }>();
+  
+  const userDataStr = sessionStorage.getItem('userData');
+  if (!userDataStr) {
+    navigate('/college-selection');
+    return null;
+  }
+  
+  const userData: UserData = JSON.parse(userDataStr);
+  
+  const handleLogout = () => {
+    sessionStorage.removeItem('userData');
+    navigate("/");
+  };
+
+  return <FacultyDashboard userData={userData} onLogout={handleLogout} />;
+};
+
+const AdminDashboardWrapper = () => {
+  const navigate = useNavigate();
+  const { userId } = useParams<{ userId: string }>();
+  
+  const userDataStr = sessionStorage.getItem('userData');
+  if (!userDataStr) {
+    navigate('/college-selection');
+    return null;
+  }
+  
+  const userData: UserData = JSON.parse(userDataStr);
+  
+  const handleLogout = () => {
+    sessionStorage.removeItem('userData');
+    navigate("/");
+  };
+
+  return <AdminDashboard userData={userData} onLogout={handleLogout} />;
+};
+
+export default function App() {
+  return (
+    <Router>
+      <div className="size-full">
+        <Suspense fallback={<LoadingSpinner />}>
+          <Routes>
+            {/* Landing page route */}
+            <Route path="/" element={<LandingPageWrapper />} />
+            
+            {/* College selection route */}
+            <Route path="/college-selection" element={<CollegeSelectionWrapper />} />
+            
+            {/* Login route with college parameter */}
+            <Route path="/login/:college?" element={<LoginWrapper />} />
+            
+            {/* Feature pages routes */}
+            <Route path="/features" element={<FeaturesPageWrapper />} />
+            <Route path="/solutions" element={<SolutionsPageWrapper />} />
+            <Route path="/support" element={<SupportPageWrapper />} />
+            
+            {/* Dashboard routes with role-based routing */}
+            <Route path="/dashboard/student/:userId?" element={<StudentDashboardWrapper />} />
+            <Route path="/dashboard/parent/:userId?" element={<ParentDashboardWrapper />} />
+            <Route path="/dashboard/faculty/:userId?" element={<FacultyDashboardWrapper />} />
+            <Route path="/dashboard/admin/:userId?" element={<AdminDashboardWrapper />} />
+            
+            {/* Fallback route */}
+            <Route path="*" element={<LandingPageWrapper />} />
+          </Routes>
+        </Suspense>
+      </div>
+    </Router>
   );
 }

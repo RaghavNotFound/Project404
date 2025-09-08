@@ -2772,7 +2772,7 @@ export function StudentDashboard({ userData, onLogout }: StudentDashboardProps) 
   };
 
   return (
-    <>
+    <div id="student-dashboard-page">
       <DashboardLayout
         userData={userData}
         activeTab={activeTab}
@@ -2899,6 +2899,6 @@ export function StudentDashboard({ userData, onLogout }: StudentDashboardProps) 
       </Dialog>
       
       <Chatbot userRole="student" userData={userData} />
-    </>
+    </div>
   );
 }

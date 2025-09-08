@@ -18,7 +18,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-slate-900 to-background">
+    <div id="landing-page" className="min-h-screen bg-gradient-to-br from-background via-slate-900 to-background">
       {/* Navigation Bar */}
       <nav className="relative z-50 border-b border-border/50 bg-background/80 backdrop-blur-sm">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">

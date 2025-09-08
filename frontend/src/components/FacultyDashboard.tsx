@@ -437,7 +437,7 @@ export function FacultyDashboard({ userData, onLogout }: FacultyDashboardProps) 
   };
 
   return (
-    <>
+    <div id="faculty-dashboard-page">
       <DashboardLayout
         userData={userData}
         activeTab={activeTab}
@@ -449,6 +449,6 @@ export function FacultyDashboard({ userData, onLogout }: FacultyDashboardProps) 
         {renderContent()}
       </DashboardLayout>
       <Chatbot userRole="faculty" userData={userData} />
-    </>
+    </div>
   );
 }

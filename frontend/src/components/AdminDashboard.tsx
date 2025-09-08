@@ -388,7 +388,7 @@ export function AdminDashboard({ userData, onLogout }: AdminDashboardProps) {
   };
 
   return (
-    <>
+    <div id="admin-dashboard-page">
       <DashboardLayout
         userData={userData}
         activeTab={activeTab}
@@ -400,6 +400,6 @@ export function AdminDashboard({ userData, onLogout }: AdminDashboardProps) {
         {renderContent()}
       </DashboardLayout>
       <Chatbot userRole="admin" userData={userData} />
-    </>
+    </div>
   );
 }

@@ -567,7 +567,7 @@ export function ParentDashboard({ userData, onLogout }: ParentDashboardProps) {
   };
 
   return (
-    <>
+    <div id="parent-dashboard-page">
       <DashboardLayout
         userData={userData}
         activeTab={activeTab}
@@ -579,6 +579,6 @@ export function ParentDashboard({ userData, onLogout }: ParentDashboardProps) {
         {renderContent()}
       </DashboardLayout>
       <Chatbot userRole="parent" userData={userData} />
-    </>
+    </div>
   );
 }

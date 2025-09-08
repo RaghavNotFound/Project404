@@ -1,5 +1,5 @@
 
-# College Selection and Dashboards
+# Evolved
 
 A comprehensive student management system with role-based dashboards for Students, Parents, Faculty, and Administrators. Built with modern React, TypeScript, and Vite for optimal performance.
 

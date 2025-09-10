@@ -1,4 +1,4 @@
-import { Users, TrendingUp, Shield, Play, Pause, BookOpen } from "lucide-react";
+import { Users, TrendingUp, Shield, Play, Pause } from "lucide-react";
 import { Button } from "./ui/button";
 import { useState } from "react";
 
@@ -24,10 +24,12 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             {/* Logo */}
-            <div className="flex items-center space-x-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-primary">
-                <BookOpen className="h-5 w-5 text-white" />
-              </div>
+            <div className="flex items-center space-x-3">
+              <img 
+                src="/images/defb8d29-ec98-465c-ad9f-6d70c54a460f.png" 
+                alt="EvolvEd Logo" 
+                className="h-12 w-auto"
+              />
               <span className="text-xl font-semibold text-foreground">EvolvEd</span>
             </div>
 

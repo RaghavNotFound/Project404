@@ -34,11 +34,33 @@ export function DashboardLayout({
         {/* Logo and Header */}
         <div className="p-6 border-b border-sidebar-border">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center pulse-glow">
-              <GraduationCap className="h-5 w-5 text-white" />
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center pulse-glow">
+              <img 
+                src="/images/evolve-logo.svg" 
+                alt="EvolveEd Logo" 
+                className="w-10 h-10 object-contain"
+                onError={(e) => {
+                  const target = e.currentTarget;
+                  // Try PNG fallback first
+                  if (target.src.includes('.svg')) {
+                    target.src = '/images/evolve-logo.png';
+                    return;
+                  }
+                  // If PNG also fails, show icon fallback
+                  target.style.display = 'none';
+                  const fallback = target.nextElementSibling as HTMLElement;
+                  if (fallback) {
+                    fallback.style.display = 'flex';
+                    fallback.classList.remove('hidden');
+                  }
+                }}
+              />
+              <div className="w-10 h-10 bg-gradient-primary rounded-lg hidden items-center justify-center">
+                <GraduationCap className="h-5 w-5 text-white" />
+              </div>
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-sidebar-foreground">EvolvEd</h2>
+              <h2 className="text-lg font-semibold text-sidebar-foreground">EvolveEd</h2>
               <p className="text-xs text-muted-foreground">{title}</p>
             </div>
           </div>

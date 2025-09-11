@@ -25,10 +25,32 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
           <div className="flex h-16 items-center justify-between">
             {/* Logo */}
             <div className="flex items-center space-x-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-primary">
-                <BookOpen className="h-5 w-5 text-white" />
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg">
+                <img 
+                  src="/images/evolve-logo.svg" 
+                  alt="EvolveEd Logo" 
+                  className="h-8 w-8 object-contain"
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    // Try PNG fallback first
+                    if (target.src.includes('.svg')) {
+                      target.src = '/images/evolve-logo.png';
+                      return;
+                    }
+                    // If PNG also fails, show icon fallback
+                    target.style.display = 'none';
+                    const fallback = target.nextElementSibling as HTMLElement;
+                    if (fallback) {
+                      fallback.style.display = 'flex';
+                      fallback.classList.remove('hidden');
+                    }
+                  }}
+                />
+                <div className="hidden h-8 w-8 items-center justify-center rounded-lg bg-gradient-primary">
+                  <BookOpen className="h-5 w-5 text-white" />
+                </div>
               </div>
-              <span className="text-xl font-semibold text-foreground">EvolvEd</span>
+              <span className="text-xl font-semibold text-foreground">EvolveEd</span>
             </div>
 
             {/* Nav Links */}

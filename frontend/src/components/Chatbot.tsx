@@ -44,7 +44,7 @@ export function Chatbot({ userRole, userData }: ChatbotProps) {
     if (!hasInitialized && userData.name) {
       const welcomeMessage: ChatMessage = {
         id: "welcome",
-        message: `Hello ${userData.name}! I'm your EvolvEd assistant. How can I help you today?`,
+        message: `Hello ${userData.name}! I'm your EvolveEd assistant. How can I help you today?`,
         sender: "bot",
         timestamp: new Date()
       };
@@ -114,7 +114,7 @@ export function Chatbot({ userRole, userData }: ChatbotProps) {
     localStorage.removeItem(`chatbot-messages-${userRole}-${userData.id || 'default'}`);
     const welcomeMessage: ChatMessage = {
       id: "welcome",
-      message: `Hello ${userData.name}! I'm your EvolvEd assistant. How can I help you today?`,
+      message: `Hello ${userData.name}! I'm your EvolveEd assistant. How can I help you today?`,
       sender: "bot",
       timestamp: new Date()
     };
@@ -314,7 +314,7 @@ export function Chatbot({ userRole, userData }: ChatbotProps) {
               <div className="flex justify-between items-center">
                 <CardTitle className="text-white flex items-center gap-2">
                   <Bot className="h-5 w-5" />
-                  EvolvEd Assistant
+                  EvolveEd Assistant
                 </CardTitle>
                 <Button
                   variant="ghost"

@@ -10,6 +10,7 @@ interface CollegeSelectionProps {
 
 export function CollegeSelection({ onCollegeSelect }: CollegeSelectionProps) {
 const colleges = [
+<<<<<<< HEAD
   "IIT Bombay (Indian Institute of Technology Bombay)",
   "IIT Delhi (Indian Institute of Technology Delhi)",
   "IIT Madras (Indian Institute of Technology Madras)",
@@ -21,6 +22,19 @@ const colleges = [
   "VIT Vellore (Vellore Institute of Technology)",
   "UPES (University of Petroleum and Energy Studies)"
 ];
+=======
+  "IIT Jodhpur (Indian Institute of Technology Jodhpur)",
+  "MNIT Jaipur (Malaviya National Institute of Technology Jaipur)",
+  "BITS Pilani (Birla Institute of Technology and Science, Pilani)",
+  "University of Rajasthan",
+  "Amity University Jaipur",
+  "UPES (University of Petroleum and Energy Studies)",
+  "IIT Delhi (Indian Institute of Technology Delhi)",
+  "IIT Bombay (Indian Institute of Technology Bombay)",
+  "IIT Kanpur (Indian Institute of Technology Kanpur)",
+  "IIT Madras (Indian Institute of Technology Madras)"
+].sort((a, b) => a.localeCompare(b));
+>>>>>>> 18bd4469a36b210e69b5fb3469b33bd4480eb46b
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

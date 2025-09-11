@@ -1,256 +1,188 @@
-import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Users, GraduationCap, BarChart3, Shield, Zap, CheckCircle, Sparkles, Star, Brain, Target } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import {
+    ArrowLeft,
+    Users,
+    GraduationCap,
+    BarChart3,
+    Shield,
+    Zap,
+    CheckCircle,
+    Sparkles,
+    Star,
+    Brain,
+    Target
+} from 'lucide-react';
 
 interface SolutionsPageProps {
   onBack: () => void;
 }
 
-// Self-contained UI Components with Advanced CSS
-const Card = ({ children, className = "", delay = 0, ...props }: { children: React.ReactNode; className?: string; delay?: number; [key: string]: any }) => (
-  <div 
-    className={`bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:rotate-1 hover:border-white/40 relative overflow-hidden group ${className}`} 
-    style={{ animationDelay: `${delay}ms` }}
-    {...props}
-  >
-    {/* Animated gradient overlay */}
-    <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-purple-500/10 to-pink-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-    
-    {/* Shimmer effect */}
-    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-    
-    <div className="relative z-10">
-      {children}
-    </div>
-  </div>
-);
+// ============================================================================
+// Enhanced UI Components
+// ============================================================================
 
-const CardHeader = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
-  <div className={`p-6 pb-3 ${className}`}>
-    {children}
-  </div>
-);
+// --- Interactive 3D Card ---
+const Card = ({ children, className = "", delay = 0, ...props }: { children: React.ReactNode; className?: string; delay?: number; [key: string]: any }) => {
+  const cardRef = useRef<HTMLDivElement>(null);
 
-const CardContent = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
-  <div className={`p-6 pt-3 ${className}`}>
-    {children}
-  </div>
-);
-
-const CardTitle = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
-  <h3 className={`text-xl font-semibold text-white mb-2 ${className}`}>
-    {children}
-  </h3>
-);
-
-const CardDescription = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
-  <p className={`text-white/70 leading-relaxed ${className}`}>
-    {children}
-  </p>
-);
-
-const Button = ({ 
-  onClick, 
-  children, 
-  variant = "default", 
-  size = "default", 
-  className = ""
-}: { 
-  onClick?: () => void; 
-  children: React.ReactNode; 
-  variant?: "default" | "outline"; 
-  size?: "default" | "lg";
-  className?: string;
-}) => {
-  const baseClasses = "inline-flex items-center justify-center rounded-xl font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 relative overflow-hidden group";
-  
-  const variants = {
-    default: "bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 shadow-lg hover:shadow-2xl hover:scale-110 hover:-translate-y-1",
-    outline: "border border-white/30 text-white hover:bg-white/10 backdrop-blur-sm hover:border-white/50 hover:scale-105"
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+    const { left, top, width, height } = cardRef.current.getBoundingClientRect();
+    const x = (e.clientX - left - width / 2) / 20; // Reduced sensitivity
+    const y = (e.clientY - top - height / 2) / 20;
+    cardRef.current.style.setProperty('--rotate-x', `${-y}deg`);
+    cardRef.current.style.setProperty('--rotate-y', `${x}deg`);
   };
-  
-  const sizes = {
-    default: "h-10 px-4 py-2",
-    lg: "h-12 px-6 py-3"
+
+  const handleMouseLeave = () => {
+    if (!cardRef.current) return;
+    cardRef.current.style.setProperty('--rotate-x', '0deg');
+    cardRef.current.style.setProperty('--rotate-y', '0deg');
   };
 
   return (
-    <button
-      onClick={onClick}
-      className={`${baseClasses} ${variants[variant]} ${sizes[size]} ${className}`}
+    <div
+      ref={cardRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      className={`bg-slate-800/40 backdrop-blur-lg border border-slate-700/80 rounded-2xl shadow-lg hover:shadow-purple-500/20 transition-all duration-300 [transform-style:preserve-3d] [transform:rotateX(var(--rotate-x,0))_rotateY(var(--rotate-y,0))] relative overflow-hidden group ${className}`}
+      style={{ animationDelay: `${delay}ms` }}
+      {...props}
     >
-      {/* Button shimmer effect */}
-      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-      <span className="relative z-10">{children}</span>
-    </button>
+      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+      <div className="relative z-10 h-full flex flex-col">
+        {children}
+      </div>
+    </div>
   );
 };
 
+const CardHeader = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
+    <div className={`p-6 pb-4 ${className}`}>{children}</div>
+);
+
+const CardContent = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
+    <div className={`p-6 pt-4 flex-grow ${className}`}>{children}</div>
+);
+
+const CardTitle = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
+    <h3 className={`text-2xl font-bold text-slate-100 mb-2 ${className}`}>{children}</h3>
+);
+
+const CardDescription = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
+    <p className={`text-slate-400 leading-relaxed ${className}`}>{children}</p>
+);
+
+// --- Polished Button ---
+const Button = ({ onClick, children, variant = "default", className = "" }: { onClick?: () => void; children: React.ReactNode; variant?: "default" | "outline"; className?: string; }) => {
+    const baseClasses = "inline-flex items-center justify-center rounded-lg font-semibold text-sm transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 focus-visible:ring-blue-500 relative overflow-hidden group h-11 px-6";
+    const variants = {
+      default: "bg-blue-600 text-white shadow-lg hover:bg-blue-500 hover:shadow-blue-500/40 hover:-translate-y-0.5",
+      outline: "border border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white hover:border-slate-600"
+    };
+
+    return (
+      <button onClick={onClick} className={`${baseClasses} ${variants[variant]} ${className}`}>
+        <span className="absolute w-0 h-0 transition-all duration-500 ease-out bg-white/20 rounded-full group-hover:w-56 group-hover:h-56"></span>
+        <span className="relative">{children}</span>
+      </button>
+    );
+};
+
+
+// ============================================================================
+// Main Solutions Page Component
+// ============================================================================
 export function SolutionsPage({ onBack }: SolutionsPageProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     setIsVisible(true);
-    
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
-    };
-    
+    const handleMouseMove = (e: MouseEvent) => setMousePosition({ x: e.clientX, y: e.clientY });
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
+
   const solutions = [
     {
-      icon: Users,
-      title: "For Students",
-      description: "Personalized learning dashboards with real-time progress tracking, academic insights, and interactive tools to enhance your educational journey.",
-      features: [
-        "Personal dashboard with academic metrics",
-        "Real-time attendance and grade tracking",
-        "AI-powered study recommendations",
-        "Peer collaboration tools",
-        "Career guidance and insights"
-      ],
-      color: "from-blue-500 to-cyan-500",
-      glowColor: "shadow-blue-500/25"
+        icon: Users,
+        title: "For Students",
+        description: "Personalized dashboards, real-time tracking, and AI-powered tools to enhance your educational journey.",
+        features: ["Personal academic metrics", "Real-time attendance & grades", "AI-powered study recommendations", "Career guidance insights"],
+        color: "text-sky-400",
+        glow: "shadow-sky-500/50"
     },
     {
-      icon: GraduationCap,
-      title: "For Educators",
-      description: "Comprehensive faculty tools for student management, performance analytics, and streamlined administrative workflows.",
-      features: [
-        "Student progress monitoring",
-        "Automated attendance tracking",
-        "Performance analytics dashboard",
-        "Assignment and grade management",
-        "Parent communication portal"
-      ],
-      color: "from-purple-500 to-pink-500",
-      glowColor: "shadow-purple-500/25"
+        icon: GraduationCap,
+        title: "For Educators",
+        description: "Comprehensive tools for student management, performance analytics, and streamlined administrative workflows.",
+        features: ["Student progress monitoring", "Automated attendance tracking", "Performance analytics", "Parent communication portal"],
+        color: "text-purple-400",
+        glow: "shadow-purple-500/50"
     },
     {
-      icon: BarChart3,
-      title: "For Administrators",
-      description: "Advanced analytics and reporting tools to make data-driven decisions and optimize institutional performance.",
-      features: [
-        "Institution-wide analytics",
-        "Student retention insights",
-        "Resource optimization tools",
-        "Compliance reporting",
-        "Strategic planning dashboard"
-      ],
-      color: "from-green-500 to-emerald-500",
-      glowColor: "shadow-green-500/25"
-    }
-  ];
-
-  const benefits = [
-    {
-      icon: Shield,
-      title: "Secure & Compliant",
-      description: "Enterprise-grade security with FERPA compliance and data protection"
-    },
-    {
-      icon: Zap,
-      title: "Lightning Fast",
-      description: "Optimized performance with cloud infrastructure for instant access"
-    },
-    {
-      icon: CheckCircle,
-      title: "Easy Integration",
-      description: "Seamless integration with existing systems and learning platforms"
+        icon: BarChart3,
+        title: "For Administrators",
+        description: "Advanced analytics and reporting to make data-driven decisions and optimize institutional performance.",
+        features: ["Institution-wide analytics", "Student retention insights", "Resource optimization", "Compliance & strategic reporting"],
+        color: "text-emerald-400",
+        glow: "shadow-emerald-500/50"
     }
   ];
 
   return (
-    <div id="solutions-page" className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 relative overflow-hidden">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500/30 rounded-full mix-blend-multiply filter blur-xl animate-blob"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500/30 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000"></div>
-        <div className="absolute top-40 left-40 w-80 h-80 bg-pink-500/30 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-4000"></div>
+    <div className="min-h-screen w-full bg-[#020418] text-white relative overflow-hidden flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8">
+      
+      <div className="absolute inset-0 z-0">
+          <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/20 rounded-full filter blur-3xl animate-blob"></div>
+          <div className="absolute -bottom-40 -left-20 w-96 h-96 bg-blue-500/20 rounded-full filter blur-3xl animate-blob animation-delay-2000"></div>
+          <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:radial-gradient(ellipse_at_center,white,transparent_70%)] opacity-30"></div>
       </div>
 
-      {/* Mouse follower effect */}
-      <div 
-        className="fixed w-96 h-96 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-full pointer-events-none z-0 transition-all duration-300 ease-out"
-        style={{
-          left: mousePosition.x - 192,
-          top: mousePosition.y - 192,
-          filter: 'blur(40px)'
-        }}
+      <div
+        className="pointer-events-none fixed inset-0 z-30 transition duration-300"
+        style={{ background: `radial-gradient(600px at ${mousePosition.x}px ${mousePosition.y}px, rgba(29, 78, 216, 0.15), transparent 80%)` }}
       ></div>
 
-      {/* Header */}
-      <div className={`relative z-10 transition-all duration-1000 transform ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
-        <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>
-        <div className="relative container mx-auto px-6 py-8">
-          <Button
-            variant="outline"
-            onClick={onBack}
-            className="gap-2 mb-8 hover:scale-110"
-          >
+      <div className="relative z-10 container w-full">
+        <header className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+          <Button variant="outline" onClick={onBack} className="flex items-center gap-2 mb-12">
             <ArrowLeft className="h-4 w-4" />
             Back to Home
           </Button>
-          
-          <div className="text-center mb-16">
-            <div className="flex items-center justify-center mb-6">
-              <Target className="h-8 w-8 text-yellow-400 mr-3 animate-pulse" />
-              <span className="text-yellow-400 font-medium">TAILORED SOLUTIONS</span>
-              <Target className="h-8 w-8 text-yellow-400 ml-3 animate-pulse" />
-            </div>
-            
-            <h1 className={`text-4xl md:text-6xl font-bold text-white mb-6 transition-all duration-1000 delay-300 transform ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
-              Tailored Solutions for
-              <span className="block bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent animate-gradient">
-                Every Stakeholder
-              </span>
+          <div className="text-center max-w-4xl mx-auto">
+            <h1 className="text-4xl md:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-slate-100 to-slate-400 mb-6">
+              Solutions for Every Role
             </h1>
-            <p className={`text-xl text-white/70 max-w-3xl mx-auto leading-relaxed transition-all duration-1000 delay-500 transform ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
-              Discover how our platform transforms education for students, educators, and administrators 
-              with intelligent tools designed for modern learning environments.
+            <p className="text-lg md:text-xl text-slate-400 leading-relaxed">
+              Our platform is engineered to empower every member of your educational community, from students to administrators.
             </p>
           </div>
-        </div>
-      </div>
+        </header>
 
-      {/* Solutions Grid */}
-      <div className="container mx-auto px-6 pb-16 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-20">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 py-20 [perspective:1000px]">
           {solutions.map((solution, index) => (
-            <Card 
-              key={index} 
-              delay={index * 200}
-              className={`group hover:${solution.glowColor} hover:shadow-2xl transition-all duration-500 ${isVisible ? 'animate-fadeInUp' : 'opacity-0'}`}
-              style={{ animationDelay: `${600 + index * 200}ms` }}
+            <Card
+              key={index}
+              delay={150 * index}
+              className={`animate-fadeInUp flex flex-col ${isVisible ? 'opacity-100' : 'opacity-0'}`}
+              style={{ animationDelay: `${300 + index * 150}ms` }}
             >
-              <CardHeader>
-                <div className={`w-20 h-20 rounded-3xl bg-gradient-to-r ${solution.color} flex items-center justify-center mb-6 group-hover:scale-125 group-hover:rotate-12 transition-all duration-500 relative`}>
-                  <solution.icon className="h-10 w-10 text-white" />
-                  {/* Glow effect */}
-                  <div className={`absolute inset-0 rounded-3xl bg-gradient-to-r ${solution.color} opacity-0 group-hover:opacity-50 blur-lg transition-opacity duration-500`}></div>
+              <CardHeader className="text-center">
+                <div className={`w-16 h-16 mx-auto mb-6 rounded-2xl flex items-center justify-center bg-slate-800 shadow-inner-lg ${solution.glow}`}>
+                  <solution.icon className={`h-8 w-8 ${solution.color}`} />
                 </div>
-                <CardTitle className="text-2xl group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-blue-200 group-hover:bg-clip-text transition-all duration-300">
-                  {solution.title}
-                </CardTitle>
-                <CardDescription className="text-base">{solution.description}</CardDescription>
+                <CardTitle>{solution.title}</CardTitle>
+                <CardDescription>{solution.description}</CardDescription>
               </CardHeader>
-              
               <CardContent>
+                <div className="border-t border-slate-700/50 my-4"></div>
                 <div className="space-y-4">
-                  <h4 className="text-white font-medium mb-4 flex items-center gap-2">
-                    <Star className="h-4 w-4 text-yellow-400" />
-                    Key Features:
-                  </h4>
-                  {solution.features.map((feature, featureIndex) => (
-                    <div 
-                      key={featureIndex} 
-                      className="flex items-start gap-3 group-hover:translate-x-2 transition-transform duration-300"
-                      style={{ transitionDelay: `${featureIndex * 100}ms` }}
-                    >
-                      <CheckCircle className="h-5 w-5 text-green-400 mt-0.5 flex-shrink-0 group-hover:scale-110 transition-transform duration-300" />
-                      <span className="text-white/80 group-hover:text-white transition-colors duration-300">{feature}</span>
+                  {solution.features.map((feature, i) => (
+                    <div key={i} className="flex items-center gap-3">
+                      <CheckCircle className="h-5 w-5 text-emerald-400 flex-shrink-0" />
+                      <span className="text-slate-300 text-sm">{feature}</span>
                     </div>
                   ))}
                 </div>
@@ -258,121 +190,11 @@ export function SolutionsPage({ onBack }: SolutionsPageProps) {
             </Card>
           ))}
         </div>
-        {/* Benefits Section */}
-        <div className={`text-center mb-12 transition-all duration-1000 delay-1000 transform ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-            Why Choose Our Platform?
-          </h2>
-          <p className="text-white/70 text-lg max-w-2xl mx-auto">
-            Built with modern technology and educational best practices
-          </p>
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-          {benefits.map((benefit, index) => (
-            <Card 
-              key={index} 
-              delay={1200 + index * 150}
-              className={`text-center group hover:scale-110 hover:rotate-1 hover:shadow-2xl transition-all duration-500 ${isVisible ? 'animate-fadeInUp' : 'opacity-0'}`}
-              style={{ animationDelay: `${1200 + index * 150}ms` }}
-            >
-              <CardContent className="pt-8">
-                <div className="w-14 h-14 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center mx-auto mb-4 group-hover:scale-125 group-hover:rotate-180 transition-all duration-700 relative">
-                  <benefit.icon className="h-7 w-7 text-white" />
-                  {/* Pulsing glow */}
-                  <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 opacity-0 group-hover:opacity-30 blur-md animate-pulse"></div>
-                </div>
-                <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-blue-400 group-hover:to-purple-400 group-hover:bg-clip-text transition-all duration-300">
-                  {benefit.title}
-                </h3>
-                <p className="text-white/70 group-hover:text-white/90 transition-colors duration-300">{benefit.description}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {/* CTA Section */}
-        <Card className={`text-center bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 border-blue-500/30 hover:border-purple-500/50 hover:scale-105 transition-all duration-700 relative overflow-hidden ${isVisible ? 'animate-fadeInUp' : 'opacity-0'}`} style={{ animationDelay: '1800ms' }}>
-          {/* Animated background particles */}
-          <div className="absolute inset-0 overflow-hidden">
-            <div className="absolute top-10 left-10 w-2 h-2 bg-blue-400 rounded-full animate-ping"></div>
-            <div className="absolute top-20 right-20 w-1 h-1 bg-purple-400 rounded-full animate-pulse"></div>
-            <div className="absolute bottom-10 left-20 w-1.5 h-1.5 bg-pink-400 rounded-full animate-bounce"></div>
-            <div className="absolute bottom-20 right-10 w-1 h-1 bg-yellow-400 rounded-full animate-ping animation-delay-1000"></div>
-          </div>
-          
-          <CardContent className="py-12 relative z-10">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center mx-auto mb-6 animate-bounce">
-              <Brain className="h-8 w-8 text-white" />
-            </div>
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-              Ready to Transform Your Institution?
-            </h2>
-            <p className="text-white/70 mb-8 max-w-2xl mx-auto">
-              Join thousands of educational institutions already using our platform to enhance learning outcomes and streamline operations.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="gap-2 hover:scale-110 hover:-translate-y-2">
-                <GraduationCap className="h-5 w-5" />
-                Start Free Trial
-              </Button>
-              <Button variant="outline" size="lg" className="hover:scale-110 hover:-translate-y-2">
-                Schedule Demo
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        
       </div>
 
-      <style>{`
-        @keyframes blob {
-          0% { transform: translate(0px, 0px) scale(1); }
-          33% { transform: translate(30px, -50px) scale(1.1); }
-          66% { transform: translate(-20px, 20px) scale(0.9); }
-          100% { transform: translate(0px, 0px) scale(1); }
-        }
-        
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(50px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
-        @keyframes gradient {
-          0%, 100% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-        }
-        
-        .animate-blob {
-          animation: blob 7s infinite;
-        }
-        
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-        
-        .animation-delay-4000 {
-          animation-delay: 4s;
-        }
-        
-        .animation-delay-1000 {
-          animation-delay: 1s;
-        }
-        
-        .animate-fadeInUp {
-          animation: fadeInUp 0.8s ease-out forwards;
-        }
-        
-        .animate-gradient {
-          background-size: 200% 200%;
-          animation: gradient 3s ease infinite;
-        }
-      `}</style>
+      <style>{`.shadow-inner-lg { box-shadow: inset 0 2px 4px 0 rgba(0,0,0,0.2), 0 1px 2px 0 rgba(255,255,255,0.05); }`}</style>
     </div>
   );
 }
